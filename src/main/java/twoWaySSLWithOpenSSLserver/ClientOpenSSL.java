@@ -1,16 +1,15 @@
-package massl;
+package twoWaySSLWithOpenSSLserver;
 
 import javax.net.ssl.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.util.Scanner;
 
-public class Client {
+public class ClientOpenSSL {
     public static void main(String[] args) throws Exception {
 
         int port = 35786;
@@ -18,11 +17,16 @@ public class Client {
         char[] server_password = "password".toCharArray();
 
         System.setProperty("javax.net.debug","all");
+        //specifing the trustStore file which contains the certificate & public of the server
+        System.setProperty("javax.net.ssl.trustStore","serverTruststore.jts");
+        //specifing the password of the trustStore file
+        System.setProperty("javax.net.ssl.trustStorePassword","password");
+
 
 // configure SSL for client authentication
         KeyStore clientKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
         clientKeystore.load(
-                Files.newInputStream(Paths.get("/home/indika/Documents/MY/JavaSocketCS/src/main/java/massl/keystore.jks")),
+                Files.newInputStream(Paths.get("/home/indika/Documents/MY/JavaSocketCS/src/main/java/twoWaySSLWithOpenSSLserver/keystore.jks")),
                 cleint_password);
 
         //client key manager factory where to store client certificates
@@ -35,7 +39,7 @@ public class Client {
         //configure the client to trust the server
         KeyStore serverKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
         serverKeystore.load(
-                new FileInputStream("/home/indika/Documents/MY/JavaSocketCS/src/main/java/massl/serverteststore.jks"),server_password
+                new FileInputStream("/home/indika/Documents/MY/JavaSocketCS/src/main/java/twoWaySSLWithOpenSSLserver/serverteststore.jks"),server_password
         );
 
         //setup trust-manager factory to see weather server is trusted

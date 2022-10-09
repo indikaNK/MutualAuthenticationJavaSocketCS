@@ -1,10 +1,8 @@
-package massl;
+package oneWaySSL;
 
 import com.sun.net.ssl.internal.ssl.Provider;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
+import javax.net.ssl.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.security.Security;
@@ -15,16 +13,19 @@ public class Server {
 
     public static void main(String[] args) throws Exception{
 
-        String servercert = "/home/indika/Documents/MY/JavaSocketCS/src/main/java/massl/serverteststore.jks";
+        String servercert = "/home/indika/Documents/MY/JavaSocketCS/src/main/java/oneWaySSL/serverteststore.jks";
+        String clientcert = "/home/indika/Documents/MY/JavaSocketCS/src/main/java/oneWaySSL/keystore.jks";
+
+        char[] cleint_password = "password".toCharArray();
+        char[] server_password = "password".toCharArray();
 
         // client used to communicate with the server
-
         System.setProperty("javax.net.ssl.keyStore", servercert);
         System.setProperty("javax.net.ssl.keyStorePassword", "password");
         System.setProperty("javax.net.debug","all");
 
         // JSSE provider to enforce the security protocols
-        Security.addProvider(new Provider());
+//        Security.addProvider(new Provider());
 
 
         try{
@@ -37,7 +38,12 @@ public class Server {
             System.out.println("Ready to accept client connections  ....");
 
             System.out.println("Echo Server Started & Ready to accept Client Connection");
-            //Wait for the SSL client to connect to this server
+
+            // authentication needed for mutual ssl
+//            sslServerSocket.setNeedClientAuth(true);
+
+
+            //Wait for the SSL client send req to server (blocking call)
             SSLSocket sslSocket = (SSLSocket)sslServerSocket.accept();
             //Create InputStream to recive messages send by the client
             DataInputStream inputStream = new DataInputStream(sslSocket.getInputStream());
